@@ -9,10 +9,12 @@ from guia_bolso import GuiaBolso
 @click.option('--email', prompt=True)
 @click.option('--cpf', prompt=True)
 @click.option('--password', prompt=True, hide_input=True)
-def main(email, cpf, password):
+@click.option('--year', prompt=True, type=int)
+@click.option('--month', prompt=True, type=int)
+@click.option('--filename', prompt=True)
+def main(email, cpf, password, year, month, filename):
     gb = GuiaBolso(email, cpf, password)
-    statement = gb.statement(2016, 12)
-    print statement.json()
+    gb.csv_transactions(year, month, filename)
 
 
 if __name__ == '__main__':
