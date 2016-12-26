@@ -95,3 +95,6 @@ ENV/
 *.iml
 out
 gen
+
+# MacOS
+.DS_Store
