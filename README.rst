@@ -40,7 +40,7 @@ Você pode usar o programa passando opções por linha de comando ou, se preferi
 
     python main.py
 
-![gif](simple.gif)
+.. image:: simple.gif
 
 Observe como foi perguntado os dados de login além do ano e mês das transações de interesse. Finalmente um arquivo csv é baixado para o diretório atual.
 
@@ -48,7 +48,7 @@ Alternativamente, o mesmo poderia ser feito usando opções por linha de comando
 
     python main.py --email example@example.com --cpf 1234567890 --year 2016 --month 12
 
-![gif](simple.gif)
+.. image:: options.gif
 
 O único dado não especificado foi a senha, que foi perguntada pelo programa.
 
