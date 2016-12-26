@@ -9,5 +9,5 @@ setup(
     author='Hugo Sadok',
     author_email='',
     description='',
-    requires=['requests','click']
+    requires=['requests','click','unicodecsv']
 )
