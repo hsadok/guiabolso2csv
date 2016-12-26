@@ -123,8 +123,7 @@ class GuiaBolso(object):
         ])
         model = dict2url(model_dict)
 
-        payload = {"model": model}
-        response = self.session.get(url, params=payload)
+        response = self.session.get(url + '?model=' + model)
         return response
 
     def csv_transactions(self, year, month, file_name):
