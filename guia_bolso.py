@@ -1,6 +1,8 @@
 # coding=utf-8
 # guia_bolso.py
 # 2016, all rights reserved
+import unicodecsv as csv
+import re
 import hashlib
 import urllib
 import uuid
@@ -17,6 +19,18 @@ def get_month_count(year, month):
     return year * 12 + month - 1
 
 
+# use this to get json objects within a js file (or inline script in HTML)
+def get_js_objects(complete_js, objects_list):
+    js_objects = {}
+
+    for obj in objects_list:
+        str_match = re.search(obj + " *= *.+", complete_js).group()
+        key, value = re.split(' *= *', str_match)
+        js_objects[key] = json.loads(value[:-1])
+
+    return dict(js_objects)
+
+
 class GuiaBolso(object):
     def __init__(self, email, cpf, password):
         self.email = email
@@ -25,6 +39,14 @@ class GuiaBolso(object):
         self.device_token = hashlib.md5(str(uuid.getnode())).hexdigest()
         self.session = requests.Session()
         self.login()
+        basic_info = self.get_basic_info()
+        self.categories = basic_info["GB.categories"]
+        self.months = basic_info["GB.months"]
+        self.category_resolver = {}
+        for categ in self.categories:
+            for sub_categ in categ['categories']:
+                self.category_resolver[sub_categ['id']] = \
+                    (categ['name'], sub_categ['name'])
 
     def login(self):
         url = "https://www.guiabolso.com.br/comparador/api/v1/user/login"
@@ -85,7 +107,13 @@ class GuiaBolso(object):
 
         print 'login 2/2'
 
-    def statement(self, year, month):
+    def get_basic_info(self):
+        url = "https://www.guiabolso.com.br/extrato"
+        response = self.session.get(url)
+        d = get_js_objects(response.text, ["GB.categories", "GB.months"])
+        return d
+
+    def json_transactions(self, year, month):
         month_count = get_month_count(year, month)
         url = "https://www.guiabolso.com.br/transactionsApi/list"
 
@@ -98,3 +126,20 @@ class GuiaBolso(object):
         payload = {"model": model}
         response = self.session.get(url, params=payload)
         return response
+
+    def csv_transactions(self, year, month, file_name):
+        transactions = self.json_transactions(year, month).json()
+        fieldnames = [u'name', u'label', u'date', u'category', u'subcategory',
+                      u'duplicated', u'currency', u'value', u'deleted']
+        for t in transactions:
+            cat_id = t['category']['id']
+            t['category'], t['subcategory'] = self.category_resolver[cat_id]
+            unwanted_keys = set(t) - set(fieldnames)
+            for k in unwanted_keys:
+                del t[k]
+
+        with open(file_name, 'wb') as f:
+            csv_writer = csv.DictWriter(f, fieldnames=fieldnames,
+                                        encoding='utf-8-sig')  # add BOM to csv
+            csv_writer.writeheader()
+            csv_writer.writerows(transactions)
