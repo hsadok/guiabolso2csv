@@ -4,7 +4,7 @@ GuiaBolso2csv
 
 GuiaBolso2csv é um simples programa em Python cuja finalidade é baixar os dados de transação do GuiaBolso em formato csv.
 
-O GuiaBolso_ é um app criado para agregar transações de diversas contas e classificá-las de forma *quase* automática. A agregação e a classificação são bastante úteis no auxílio do controle dos gastos. O problema é que a análise dos dados é limitada ao que é oferecido pela plataforma. Além disso, os cliente não têm posse de seus dados, caso a empresa deixe de existir ou ocorra alguma mudança na política, os dados podem ser perdidos para sempre. O GuiaBolso2csv permite que os dados sejam baixados e então usados (e guardados) da forma que for mais convenientes. Ainda, o fato de ser gerado um arquivo csv facilita a exportação para o Excel.
+O GuiaBolso_ é um app criado para agregar transações de diversas contas e classificá-las de forma *quase* automática. A agregação e a classificação são bastante úteis no auxílio do controle dos gastos. O problema é que a análise dos dados é limitada ao que é oferecido pela plataforma. Além disso, os clientes não têm posse de seus dados, caso a empresa deixe de existir ou ocorra alguma mudança na política, os dados podem ser perdidos para sempre. O GuiaBolso2csv permite que os dados sejam baixados e então usados (e guardados) da forma que for mais conveniente. Ainda, o fato de ser gerado um arquivo csv facilita a exportação para o Excel.
 
 .. _GuiaBolso: https://www.guiabolso.com.br/
 
@@ -12,7 +12,7 @@ O GuiaBolso_ é um app criado para agregar transações de diversas contas e cla
 Funcionalidades
 ---------------
 
-* Baixe suas transações categorisadas do GuiaBolso.
+* Baixe suas transações categorizadas do GuiaBolso.
 
 * Exporte facilmente para uma planilha do Excel.
 
@@ -57,3 +57,4 @@ Qualquer dúvida no uso das opções basta fazer::
     python main.py --help
 
 .. image:: help.png
+
