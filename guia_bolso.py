@@ -42,11 +42,18 @@ class GuiaBolso(object):
         basic_info = self.get_basic_info()
         self.categories = basic_info["GB.categories"]
         self.months = basic_info["GB.months"]
+        self.statements = basic_info["GB.statements"]
+
         self.category_resolver = {}
         for categ in self.categories:
             for sub_categ in categ['categories']:
                 self.category_resolver[sub_categ['id']] = \
                     (categ['name'], sub_categ['name'])
+
+        self.account_resolver = {}
+        for account in self.statements:
+            for sub_account in account['accounts']:
+                self.account_resolver[sub_account['id']] = sub_account['name']
 
     def login(self):
         url = "https://www.guiabolso.com.br/comparador/api/v1/user/login"
@@ -110,7 +117,8 @@ class GuiaBolso(object):
     def get_basic_info(self):
         url = "https://www.guiabolso.com.br/extrato"
         response = self.session.get(url)
-        d = get_js_objects(response.text, ["GB.categories", "GB.months"])
+        d = get_js_objects(response.text,
+                           ["GB.categories", "GB.months", "GB.statements"])
         return d
 
     def json_transactions(self, year, month):
@@ -128,11 +136,13 @@ class GuiaBolso(object):
 
     def csv_transactions(self, year, month, file_name):
         transactions = self.json_transactions(year, month).json()
-        fieldnames = [u'name', u'label', u'date', u'category', u'subcategory',
-                      u'duplicated', u'currency', u'value', u'deleted']
+        fieldnames = [u'name', u'label', u'date', u'account', u'category',
+                      u'subcategory', u'duplicated', u'currency', u'value',
+                      u'deleted']
         for t in transactions:
             cat_id = t['category']['id']
             t['category'], t['subcategory'] = self.category_resolver[cat_id]
+            t['account'] = self.account_resolver[t['statementId']]
             unwanted_keys = set(t) - set(fieldnames)
             for k in unwanted_keys:
                 del t[k]
