@@ -142,7 +142,8 @@ class GuiaBolso(object):
         for t in transactions:
             cat_id = t['category']['id']
             t['category'], t['subcategory'] = self.category_resolver[cat_id]
-            t['account'] = self.account_resolver[t['statementId']]
+            t['account'] = self.account_resolver.get(
+            	t['statementId'], t['statementId'])
             unwanted_keys = set(t) - set(fieldnames)
             for k in unwanted_keys:
                 del t[k]
