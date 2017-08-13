@@ -2,7 +2,17 @@
 # main.py
 # 2016, all rights reserved
 import click as click
+import datetime
+
 from guia_bolso import GuiaBolso
+
+
+def month_iterator(initial_date, finish_date):
+    current_date = initial_date.replace(day=1)
+    while current_date <= finish_date:
+        yield current_date
+        current_date += datetime.timedelta(days=32)
+        current_date = current_date.replace(day=1)
 
 
 @click.command()
@@ -27,22 +37,15 @@ def main(email, password, year, month, last_year, last_month):
     """Download GuiaBolso transactions in a csv format."""
     gb = GuiaBolso(email, password)
 
-    if last_year is not None:
-        year_range = range(year, last_year+1)
-    else:
-        year_range = [year]
-    
-    # TODO: Fix month range
-    if last_month is not None:
-        month_range = range(month, last_month+1)
-    else:
-        month_range = [month]
+    initial_date = datetime.date(year, month, 1)
+    finish_date = datetime.date(last_year or year, last_month or month, 1)
 
-    for year in year_range:
-        for month in month_range:
-            filename = "%i-%i.csv" % (year, month)
-            print filename
-            gb.csv_transactions(year, month, filename)
+    for date in month_iterator(initial_date, finish_date):
+        year = date.year
+        month = date.month
+        filename = "%i-%i.csv" % (year, month)
+        print filename
+        gb.csv_transactions(year, month, filename)
 
 
 if __name__ == '__main__':
