@@ -142,6 +142,8 @@ class GuiaBolso(object):
         for t in transactions:
             cat_id = t['category']['id']
             t['category'], t['subcategory'] = self.category_resolver[cat_id]
+
+            # When the account name cannot be resolved, we use the id...
             t['account'] = self.account_resolver.get(
                 t['statementId'], t['statementId']
             )
