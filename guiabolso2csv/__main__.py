@@ -8,7 +8,6 @@ from guia_bolso import GuiaBolso
 @click.command()
 @click.option('--email', prompt=True, help="Email used in your GuiaBolso accou"
                                            "nt")
-@click.option('--cpf', prompt=True, help="Your CPF (required by GuiaBolso)")
 @click.option('--password', prompt=True, hide_input=True)
 @click.option('--year', prompt=True, type=int,
               help="Year from the transactions you are interested. It will be "
@@ -24,9 +23,9 @@ from guia_bolso import GuiaBolso
               help="If you specify last month it will be used as the last mont"
                    "h to get a range of months, starting in MONTH and ending i"
                    "n LAST_MONTH")
-def main(email, cpf, password, year, month, last_year, last_month):
+def main(email, password, year, month, last_year, last_month):
     """Download GuiaBolso transactions in a csv format."""
-    gb = GuiaBolso(email, cpf, password)
+    gb = GuiaBolso(email, password)
 
     if last_year is not None:
         year_range = range(year, last_year+1)

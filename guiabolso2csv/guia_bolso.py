@@ -1,6 +1,7 @@
 # coding=utf-8
 # guia_bolso.py
 # 2016, all rights reserved
+import datetime
 import unicodecsv as csv
 import re
 import hashlib
@@ -15,7 +16,12 @@ def dict2url(d):
     return urllib.quote(json.dumps(d, separators=(',', ':')))
 
 
-def get_month_count(year, month):
+def get_month_count(year=None, month=None):
+    today = datetime.date.today()
+    if year is None:
+        year = today.year
+    if month is None:
+        month = today.month
     return year * 12 + month - 1
 
 
@@ -32,9 +38,8 @@ def get_js_objects(complete_js, objects_list):
 
 
 class GuiaBolso(object):
-    def __init__(self, email, cpf, password):
+    def __init__(self, email, password):
         self.email = email
-        self.cpf = cpf
         self.password = password
         self.device_token = hashlib.md5(str(uuid.getnode())).hexdigest()
         self.session = requests.Session()
@@ -62,18 +67,17 @@ class GuiaBolso(object):
         {
              "email":%s,
              "pwd":%s,
-             "cpf":%s,
              "deviceToken":"%s",
              "appToken":"2.6.0",
              "origin":"https://www.guiabolso.com.br/comparador/#/login",
-             "os":"(Macintosh; Intel Mac OS X 10_12_2)",
+             "os":"(NOPE)",
              "deviceName":"%s",
-             "month":24191
+             "month":%i
         }""" % (json.dumps(self.email),
                 json.dumps(self.password),
-                json.dumps(self.cpf),
                 self.device_token,
-                self.device_token)
+                self.device_token,
+                get_month_count())
 
         headers = {
             'content-type': "application/json"
@@ -143,7 +147,8 @@ class GuiaBolso(object):
             cat_id = t['category']['id']
             t['category'], t['subcategory'] = self.category_resolver[cat_id]
             t['account'] = self.account_resolver.get(
-            	t['statementId'], t['statementId'])
+                t['statementId'], t['statementId']
+            )
             unwanted_keys = set(t) - set(fieldnames)
             for k in unwanted_keys:
                 del t[k]
