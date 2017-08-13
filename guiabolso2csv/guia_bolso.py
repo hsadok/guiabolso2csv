@@ -89,8 +89,6 @@ class GuiaBolso(object):
             print response['error']['errorMessage']
             raise Exception(response['error'])
 
-        print 'login 1/2'
-
         url = "https://www.guiabolso.com.br/access/login"
         payload_dict = OrderedDict([
             ("deviceToken", self.device_token),
@@ -115,8 +113,6 @@ class GuiaBolso(object):
         if response['success'] != 1:
             print response['message']
             raise Exception(response['message'])
-
-        print 'login 2/2'
 
     def get_basic_info(self):
         url = "https://www.guiabolso.com.br/extrato"
