@@ -24,7 +24,8 @@ setup(
     install_requires=[
         'requests',
         'click',
-        'unicodecsv'
+        'unicodecsv',
+        'openpyxl'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

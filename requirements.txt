@@ -1,3 +1,4 @@
 unicodecsv
 click
 requests
+openpyxl

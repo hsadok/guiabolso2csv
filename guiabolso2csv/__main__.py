@@ -33,7 +33,8 @@ def month_iterator(initial_date, finish_date):
               help="If you specify last month it will be used as the last mont"
                    "h to get a range of months, starting in MONTH and ending i"
                    "n LAST_MONTH")
-def main(email, password, year, month, last_year, last_month):
+@click.option('--excel', is_flag=True)
+def main(email, password, year, month, last_year, last_month, excel):
     """Download GuiaBolso transactions in a csv format."""
     gb = GuiaBolso(email, password)
 
@@ -43,10 +44,14 @@ def main(email, password, year, month, last_year, last_month):
     for date in month_iterator(initial_date, finish_date):
         year = date.year
         month = date.month
-        filename = "%i-%i.csv" % (year, month)
+        filename = "%i-%i" % (year, month)
+        if excel:
+            filename += '.xlsx'
+            gb.xlsx_transactions(year, month, filename)
+        else:
+            filename += '.csv'
+            gb.csv_transactions(year, month, filename)
         print filename
-        gb.csv_transactions(year, month, filename)
-
 
 if __name__ == '__main__':
     main()

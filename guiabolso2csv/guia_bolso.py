@@ -10,6 +10,7 @@ import uuid
 import requests
 import json
 from collections import OrderedDict
+import openpyxl
 
 
 def dict2url(d):
@@ -48,6 +49,9 @@ class GuiaBolso(object):
         self.categories = basic_info["GB.categories"]
         self.months = basic_info["GB.months"]
         self.statements = basic_info["GB.statements"]
+        self.fieldnames = [u'name', u'label', u'date', u'account', u'category',
+                           u'subcategory', u'duplicated', u'currency',
+                           u'value', u'deleted']
 
         self.category_resolver = {}
         for categ in self.categories:
@@ -134,11 +138,9 @@ class GuiaBolso(object):
         response = self.session.get(url + '?model=' + model)
         return response
 
-    def csv_transactions(self, year, month, file_name):
+    def transactions(self, year, month):
         transactions = self.json_transactions(year, month).json()
-        fieldnames = [u'name', u'label', u'date', u'account', u'category',
-                      u'subcategory', u'duplicated', u'currency', u'value',
-                      u'deleted']
+
         for t in transactions:
             cat_id = t['category']['id']
             t['category'], t['subcategory'] = self.category_resolver[cat_id]
@@ -147,12 +149,33 @@ class GuiaBolso(object):
             t['account'] = self.account_resolver.get(
                 t['statementId'], t['statementId']
             )
-            unwanted_keys = set(t) - set(fieldnames)
+            unwanted_keys = set(t) - set(self.fieldnames)
             for k in unwanted_keys:
                 del t[k]
 
+        return transactions
+
+    def csv_transactions(self, year, month, file_name):
+        transactions = self.transactions(year, month)
+
         with open(file_name, 'wb') as f:
-            csv_writer = csv.DictWriter(f, fieldnames=fieldnames,
+            csv_writer = csv.DictWriter(f, fieldnames=self.fieldnames,
                                         encoding='utf-8-sig')  # add BOM to csv
             csv_writer.writeheader()
             csv_writer.writerows(transactions)
+
+    def xlsx_transactions(self, year, month, file_name):
+        transactions = self.transactions(year, month)
+        wb = openpyxl.Workbook()
+        ws = wb.active
+
+        ws.append(self.fieldnames)
+
+        for trans in transactions:
+            if u'date' in trans:
+                trans[u'date'] = datetime.datetime.fromtimestamp(
+                    trans[u'date']/1000).date()
+            row = [trans[k] for k in self.fieldnames]
+            ws.append(row)
+
+        wb.save(file_name)
