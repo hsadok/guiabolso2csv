@@ -12,9 +12,11 @@ setup(
     long_description=readme,
     packages=find_packages(),
     url='https://github.com/hugombarreto/guiabolso2csv',
+    download_url='https://github.com/hugombarreto/guiabolso2csv/archive/0.2.tar.gz',
     license='GPLv3',
     author='Hugo Sadok',
     author_email='hugo@sadok.com.br',
+    keywords=['finance', 'guiabolso', 'excel', 'csv', 'xlsx'],
     entry_points={
         'console_scripts': [
             'guiabolso2csv=guiabolso2csv.__main__:main'
