@@ -12,7 +12,7 @@ from guia_bolso import GuiaBolso
 @click.option('--password', prompt=True, hide_input=True)
 @click.option('--year', prompt=True, type=int,
               help="Year from the transactions you are interested. It will be "
-                   "used as the first year if LAST-YEAR is specified")
+                   "used as the first year if LAST_YEAR is specified")
 @click.option('--month', prompt=True, type=click.IntRange(1, 12),
               help="Month from the transactions you are interested. It will be"
                    " used as the first month if LAST_MONTH is specified")
@@ -32,7 +32,8 @@ def main(email, cpf, password, year, month, last_year, last_month):
         year_range = range(year, last_year+1)
     else:
         year_range = [year]
-
+    
+    # TODO: Fix month range
     if last_month is not None:
         month_range = range(month, last_month+1)
     else:
