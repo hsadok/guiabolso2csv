@@ -33,7 +33,8 @@ def month_iterator(initial_date, finish_date):
               help="If you specify last month it will be used as the last mont"
                    "h to get a range of months, starting in MONTH and ending i"
                    "n LAST_MONTH")
-@click.option('--excel', is_flag=True)
+@click.option('--excel', is_flag=True, help="Save transactions as xlsx instead"
+                                            " of csv")
 def main(email, password, year, month, last_year, last_month, excel):
     """Download GuiaBolso transactions in a csv format."""
     gb = GuiaBolso(email, password)
