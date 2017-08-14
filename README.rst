@@ -20,7 +20,7 @@ Funcionalidades
 Obtendo
 -------
 
-O jeito mais fácil de instalar é usando o pip (pode ser necessário usar sudo). Basta fazer ::
+O jeito mais fácil de instalar é usando o ``pip`` (pode ser necessário usar sudo). Basta fazer ::
 
     pip install guiabolso2csv
 
@@ -54,7 +54,7 @@ Algumas funcionalidades não são disponíveis de forma interativa. A seguir ser
 
 Intervalo de Meses
 ..................
-Para obter um intervalo de meses basta usar as opções `--last-year` e `--last-month`. O programa baixa automaticamente arquivos para todos os meses desde `MONTH/YEAR` até `LAST_MONTH/LAST_YEAR`, por exemplo::
+Para obter um intervalo de meses basta usar as opções ``--last-year`` e ``--last-month``. O programa baixa automaticamente arquivos para todos os meses desde ``MONTH/YEAR`` até ``LAST_MONTH/LAST_YEAR``, por exemplo::
 
     guiabolso2csv --email example@example.com --year 2016 --month 12 --last-year 2017 --last-month 6
 
@@ -63,7 +63,7 @@ Para obter um intervalo de meses basta usar as opções `--last-year` e `--last-
 Baixando em Formato do Excel
 ............................
 
-Além de `csv`, você pode baixar os dados de transação diretamente no formato `xlsx`. Para isso basta usar a flag `--excel`, por exemplo::
+Além de ``csv``, você pode baixar os dados de transação diretamente no formato ``xlsx``. Para isso basta usar a flag ``--excel``, por exemplo::
 
     guiabolso2csv --email example@example.com --year 2016 --month 12 --excel
 
@@ -74,14 +74,14 @@ Baixando o repositório
 
 Caso deseje contribuir para este reprositório ou simplesmente prefere baixar diretamente (sem usar o PyPI). Siga as instruções a seguir.
 
-Você deve ter `git` e `pip` instalados para, respectivamente, baixar o repositório e instalar as dependências.
+Você deve ter ``git`` e ``pip`` instalados para, respectivamente, baixar o repositório e instalar as dependências.
 
 Clone o repositório::
 
     git clone git@github.com:hugombarreto/guiabolso2csv.git
 
 
-Vá para o repositório que você acabou de clonar e instale as dependências com `pip`::
+Vá para o repositório que você acabou de clonar e instale as dependências com ``pip``::
 
     cd guiabolso2csv
     pip install -r requirements.txt
@@ -89,3 +89,4 @@ Vá para o repositório que você acabou de clonar e instale as dependências co
 Pronto, você já pode usar o GuiaBolso2csv a partir do código baixado fazendo::
 
     python guiabolso2csv
+
