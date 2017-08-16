@@ -9,6 +9,7 @@ import urllib
 import uuid
 import requests
 import json
+import warnings
 from collections import OrderedDict
 import openpyxl
 
@@ -158,6 +159,11 @@ class GuiaBolso(object):
     def csv_transactions(self, year, month, file_name):
         transactions = self.transactions(year, month)
 
+        if len(transactions) == 0:
+            warnings.warn('No transactions for the period ({}-{})'.format(
+                year, month))
+            return
+
         with open(file_name, 'wb') as f:
             csv_writer = csv.DictWriter(f, fieldnames=self.fieldnames,
                                         encoding='utf-8-sig')  # add BOM to csv
@@ -166,6 +172,12 @@ class GuiaBolso(object):
 
     def xlsx_transactions(self, year, month, file_name):
         transactions = self.transactions(year, month)
+
+        if len(transactions) == 0:
+            warnings.warn('No transactions for the period ({}-{})'.format(
+                year, month))
+            return
+
         wb = openpyxl.Workbook()
         ws = wb.active
 
