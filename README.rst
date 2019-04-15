@@ -78,7 +78,7 @@ Você deve ter ``git`` e ``pip`` instalados para, respectivamente, baixar o repo
 
 Clone o repositório::
 
-    git clone git@github.com:hugombarreto/guiabolso2csv.git
+    git clone git@github.com:hsadok/guiabolso2csv.git
 
 
 Vá para o repositório que você acabou de clonar e instale as dependências com ``pip``::
