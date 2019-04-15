@@ -98,3 +98,6 @@ gen
 
 # MacOS
 .DS_Store
+
+# VSCode
+.code

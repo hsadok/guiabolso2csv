@@ -5,7 +5,6 @@ import datetime
 import unicodecsv as csv
 import re
 import hashlib
-import urllib
 import uuid
 import requests
 import json
@@ -13,9 +12,15 @@ import warnings
 from collections import OrderedDict
 import openpyxl
 
+# handle urllib quote import in Py2 and Py3
+try:
+    from urllib import quote
+except ImportError:
+    from urllib.parse import quote
+
 
 def dict2url(d):
-    return urllib.quote(json.dumps(d, separators=(',', ':')))
+    return quote(json.dumps(d, separators=(',', ':')))
 
 
 def get_month_count(year=None, month=None):
@@ -43,7 +48,8 @@ class GuiaBolso(object):
     def __init__(self, email, password):
         self.email = email
         self.password = password
-        self.device_token = hashlib.md5(str(uuid.getnode())).hexdigest()
+        hardware_address = str(uuid.getnode()).encode('utf-8')
+        self.device_token = hashlib.md5(hardware_address).hexdigest()
         self.session = requests.Session()
         self.login()
         basic_info = self.get_basic_info()
@@ -91,7 +97,7 @@ class GuiaBolso(object):
         response = self.session.post(url, headers=headers, data=payload).json()
 
         if response['returnCode'] == 0:
-            print response['error']['errorMessage']
+            print(response['error']['errorMessage'])
             raise Exception(response['error'])
 
         url = "https://www.guiabolso.com.br/access/login"
@@ -116,7 +122,7 @@ class GuiaBolso(object):
         response = self.session.post(url, headers=headers, data=payload).json()
 
         if response['success'] != 1:
-            print response['message']
+            print(response['message'])
             raise Exception(response['message'])
 
     def get_basic_info(self):

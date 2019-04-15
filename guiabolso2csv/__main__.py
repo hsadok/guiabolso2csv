@@ -4,7 +4,7 @@
 import click as click
 import datetime
 
-from guia_bolso import GuiaBolso
+from guiabolso2csv.guia_bolso import GuiaBolso
 
 
 def month_iterator(initial_date, finish_date):
@@ -52,7 +52,7 @@ def main(email, password, year, month, last_year, last_month, excel):
         else:
             filename += '.csv'
             gb.csv_transactions(year, month, filename)
-        print filename
+        print(filename)
 
 if __name__ == '__main__':
     main()
