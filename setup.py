@@ -6,13 +6,13 @@ with open('README.rst') as readme_file:
 
 setup(
     name='guiabolso2csv',
-    version='0.3',
+    version='0.4',
     description="GuiaBolso2csv is a simple Python program that can be used to"
                 "download GuiaBolso transactions in a csv format.",
     long_description=readme,
     packages=find_packages(),
     url='https://github.com/hugombarreto/guiabolso2csv',
-    download_url='https://github.com/hugombarreto/guiabolso2csv/archive/0.3.tar.gz',
+    download_url='https://github.com/hugombarreto/guiabolso2csv/archive/0.4.tar.gz',
     license='GPLv3',
     author='Hugo Sadok',
     author_email='hugo@sadok.com.br',
