@@ -6,7 +6,7 @@ with open('README.rst') as readme_file:
 
 setup(
     name='guiabolso2csv',
-    version='0.4',
+    version='0.5',
     description="GuiaBolso2csv is a simple Python program that can be used to"
                 "download GuiaBolso transactions in a csv format.",
     long_description=readme,

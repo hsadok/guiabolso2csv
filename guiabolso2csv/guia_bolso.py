@@ -105,7 +105,7 @@ class GuiaBolso(object):
         if response['name'] != "web:users:login:response":
             print(response['name'])
             raise Exception(response['payload']['code'])
-        
+
         return response['auth']['token']
 
     def get_basic_info(self):
@@ -190,7 +190,7 @@ class GuiaBolso(object):
                 t['account'] = self.account_resolver.get(
                     t['statementId'], t['statementId'])
                 unwanted_keys = set(t) - set(self.fieldnames)
-                
+
                 for k in unwanted_keys:
                     del t[k]
                 transactions_new.append(t)
