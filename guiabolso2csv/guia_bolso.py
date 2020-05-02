@@ -46,20 +46,20 @@ def get_js_objects(complete_js, objects_list):
 
 class GuiaBolso(object):
     def __init__(self, email, password):
+        self.token=""
         self.email = email
         self.password = password
         hardware_address = str(uuid.getnode()).encode('utf-8')
         self.device_token = hashlib.md5(hardware_address).hexdigest()
         self.session = requests.Session()
-        self.login()
+        self.token = self.login()
         basic_info = self.get_basic_info()
-        self.categories = basic_info["GB.categories"]
-        self.months = basic_info["GB.months"]
-        self.statements = basic_info["GB.statements"]
-        self.fieldnames = [u'name', u'label', u'date', u'account', u'category',
+        self.categories = basic_info["categoryTypes"]
+        # self.months = basic_info["GB.months"]
+        self.statements = basic_info["accounts"]
+        self.fieldnames = [u'id', u'label', u'description', u'date', u'account', u'category',
                            u'subcategory', u'duplicated', u'currency',
                            u'value', u'deleted']
-
         self.category_resolver = {}
         for categ in self.categories:
             for sub_categ in categ['categories']:
@@ -68,99 +68,134 @@ class GuiaBolso(object):
 
         self.account_resolver = {}
         for account in self.statements:
-            for sub_account in account['accounts']:
+            for sub_account in account['statements']:
                 self.account_resolver[sub_account['id']] = sub_account['name']
 
     def login(self):
-        url = "https://www.guiabolso.com.br/comparador/api/v1/user/login"
+        url = "https://www.guiabolso.com.br/comparador/v2/events/others"
 
         payload = """
         {
-             "email":%s,
-             "pwd":%s,
-             "deviceToken":"%s",
-             "appToken":"2.6.0",
-             "origin":"https://www.guiabolso.com.br/comparador/#/login",
-             "os":"(NOPE)",
-             "deviceName":"%s",
-             "month":%i
+             "name":"web:users:login",
+             "version":"1",
+             "payload":{"email":%s,
+                        "pwd":%s,
+                        "userPlatform":"GUIABOLSO",
+                        "deviceToken":"%s",
+                        "os":"Windows",
+                        "appToken":"1.1.0",
+                        "deviceName":"%s"},
+             "flowId":"","id":"",
+             "auth":{"token":"","x-sid":"","x-tid":""},
+             "metadata":{"origin":"web",
+                         "appVersion":"1.0.0",
+                         "createdAt":"2020-04-24T23:20:05.552Z"},
+             "identity":{}
         }""" % (json.dumps(self.email),
                 json.dumps(self.password),
                 self.device_token,
-                self.device_token,
-                get_month_count())
+                self.device_token)
 
         headers = {
             'content-type': "application/json"
         }
 
+        response = self.session.get(url, headers=headers)
         response = self.session.post(url, headers=headers, data=payload).json()
+        if response['name'] != "web:users:login:response":
+            print(response['name'])
+            raise Exception(response['payload']['code'])
 
-        if response['returnCode'] == 0:
-            print(response['error']['errorMessage'])
-            raise Exception(response['error'])
-
-        url = "https://www.guiabolso.com.br/access/login"
-        payload_dict = OrderedDict([
-            ("deviceToken", self.device_token),
-            ("email", self.email),
-            ("pwd", self.password)
-        ])
-        payload = "model=" + dict2url(payload_dict)
-
-        mp_gb_dict = OrderedDict([
-            ("distinct_id", self.email),
-            ("$initial_referrer", "$direct"),
-            ("$initial_referring_domain", "$direct")
-        ])
-        cookie = "mp_gb=%s; mp_mixpanel__c=1" % dict2url(mp_gb_dict)
-        headers = {
-            'cookie': cookie,
-            'content-type': "application/x-www-form-urlencoded; charset=UTF-8"
-        }
-
-        response = self.session.post(url, headers=headers, data=payload).json()
-
-        if response['success'] != 1:
-            print(response['message'])
-            raise Exception(response['message'])
+        return response['auth']['token']
 
     def get_basic_info(self):
-        url = "https://www.guiabolso.com.br/extrato"
-        response = self.session.get(url)
-        d = get_js_objects(response.text,
-                           ["GB.categories", "GB.months", "GB.statements"])
-        return d
+        url = "https://www.guiabolso.com.br/comparador/v2/events/"
+
+        headers = {
+            'content-type': "application/json"
+        }
+
+        payload = """
+        {
+            "name":"rawData:info",
+            "version":"6",
+            "payload":{"userPlatform":"GUIABOLSO",
+                       "appToken":"1.1.0",
+                       "os":"Win32"},
+            "flowId":"",
+            "id":"",
+            "auth":{"token":"Bearer %s",
+                    "sessionToken":"%s",
+                    "x-sid":"",
+                    "x-tid":""},
+            "metadata":{"origin":"web",
+                        "appVersion":"1.0.0",
+                        "createdAt":""},
+            "identity":{}
+        }""" % (self.token,
+                self.token)
+
+        response = self.session.post(url, headers=headers, data=payload).json()
+
+        # if response['name'] == "rawData:info:response":
+        #     print("basicInfo OK")
+        d = {}
+        d['categoryTypes'] = response['payload']['categoryTypes']
+        d['accounts'] = response['payload']['accounts']
+        return dict(d)
 
     def json_transactions(self, year, month):
         month_count = get_month_count(year, month)
-        url = "https://www.guiabolso.com.br/transactionsApi/list"
+        url = "https://www.guiabolso.com.br/comparador/v2/events/"
 
-        model_dict = OrderedDict([
-            ("month", month_count),
-            ("showDuplicate", True)
-        ])
-        model = dict2url(model_dict)
+        headers = {
+            'content-type': "application/json"
+        }
 
-        response = self.session.get(url + '?model=' + model)
+        payload = """
+        {
+             "name":"users:summary:month",
+             "version":"1",
+             "payload":{"userPlatform":"GUIABOLSO",
+                        "appToken":"1.1.0",
+                        "os":"Win32",
+                        "monthCode":%i},
+             "flowId":"",
+             "id":"",
+             "auth":{"token":"Bearer %s",
+                     "sessionToken":"%s",
+                     "x-sid":"",
+                     "x-tid":""},
+             "metadata":{"origin":"web",
+                         "appVersion":"1.0.0",
+                         "createdAt":"2020-04-25T20:20:05.552Z"},
+             "identity":{}
+        }""" % (month_count,
+                self.token,
+                self.token)
+
+        response = self.session.post(url, headers=headers, data=payload)
+        # if response.json()['name'] == "users:summary:month:response":
+        #     print("Transaction OK")
+
         return response
 
     def transactions(self, year, month):
+        transactions_new = []
         transactions = self.json_transactions(year, month).json()
+        for statement in transactions['payload']['userMonthHistory']['statements']:
+            for t in statement['transactions']:
+                cat_id = t['categoryId']
+                t['category'], t['subcategory'] = self.category_resolver[cat_id]
+                t['account'] = self.account_resolver.get(
+                    t['statementId'], t['statementId'])
+                unwanted_keys = set(t) - set(self.fieldnames)
 
-        for t in transactions:
-            cat_id = t['category']['id']
-            t['category'], t['subcategory'] = self.category_resolver[cat_id]
+                for k in unwanted_keys:
+                    del t[k]
+                transactions_new.append(t)
 
-            # When the account name cannot be resolved, we use the id...
-            t['account'] = self.account_resolver.get(
-                t['statementId'], t['statementId']
-            )
-            unwanted_keys = set(t) - set(self.fieldnames)
-            for k in unwanted_keys:
-                del t[k]
-
-        return transactions
+        return transactions_new
 
     def csv_transactions(self, year, month, file_name):
         transactions = self.transactions(year, month)
