@@ -72,25 +72,24 @@ class GuiaBolso(object):
                 self.account_resolver[sub_account['id']] = sub_account['name']
 
     def login(self):
-        url = "https://www.guiabolso.com.br/comparador/v2/events/others"
+        url = "https://www.guiabolso.com.br/API/events/others/"
 
         payload = """
         {
-             "name":"web:users:login",
-             "version":"1",
              "payload":{"email":%s,
+                        "userPlatform":"GuiaBolso",
                         "pwd":%s,
-                        "userPlatform":"GUIABOLSO",
                         "deviceToken":"%s",
-                        "os":"Windows",
-                        "appToken":"1.1.0",
+                        "pnToken":"",
+                        "origin":"iOS",
+                        "appVersion":"7.1.2",
                         "deviceName":"%s"},
-             "flowId":"","id":"",
-             "auth":{"token":"","x-sid":"","x-tid":""},
-             "metadata":{"origin":"web",
-                         "appVersion":"1.0.0",
-                         "createdAt":"2020-04-24T23:20:05.552Z"},
-             "identity":{}
+             "metadata":{"origin":"iOS",
+                         "appVersion":"7.1.2"}, 
+             "version":"6",             
+             "flowId":"",
+             "id":"",
+             "name":"users:login"
         }""" % (json.dumps(self.email),
                 json.dumps(self.password),
                 self.device_token,
@@ -100,12 +99,14 @@ class GuiaBolso(object):
             'content-type': "application/json"
         }
 
-        response = self.session.get(url, headers=headers)
+        self.session.headers.update({'User-Agent': 'Guiabolso/235 CFNetwork/893.14.2 Darwin/17.3.0'})
+
         response = self.session.post(url, headers=headers, data=payload).json()
-        if response['name'] != "web:users:login:response":
+
+        if response['name'] != "users:login:response":
             print(response['name'])
             raise Exception(response['payload']['code'])
-
+        
         return response['auth']['token']
 
     def get_basic_info(self):
