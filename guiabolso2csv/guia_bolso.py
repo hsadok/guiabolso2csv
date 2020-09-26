@@ -46,7 +46,7 @@ def get_js_objects(complete_js, objects_list):
 
 class GuiaBolso(object):
     def __init__(self, email, password):
-        self.token=""
+        self.token = ""
         self.email = email
         self.password = password
         hardware_address = str(uuid.getnode()).encode('utf-8')
@@ -57,9 +57,10 @@ class GuiaBolso(object):
         self.categories = basic_info["categoryTypes"]
         # self.months = basic_info["GB.months"]
         self.statements = basic_info["accounts"]
-        self.fieldnames = [u'id', u'label', u'description', u'date', u'account', u'category',
-                           u'subcategory', u'duplicated', u'currency',
-                           u'value', u'deleted']
+        self.fieldnames = [
+            u'id', u'label', u'description', u'date', u'account', u'category',
+            u'subcategory', u'duplicated', u'currency', u'value', u'deleted'
+        ]
         self.category_resolver = {}
         for categ in self.categories:
             for sub_categ in categ['categories']:
@@ -85,8 +86,8 @@ class GuiaBolso(object):
                         "appVersion":"7.1.2",
                         "deviceName":"%s"},
              "metadata":{"origin":"iOS",
-                         "appVersion":"7.1.2"}, 
-             "version":"6",             
+                         "appVersion":"7.1.2"},
+             "version":"6",
              "flowId":"",
              "id":"",
              "name":"users:login"
@@ -99,14 +100,16 @@ class GuiaBolso(object):
             'content-type': "application/json"
         }
 
-        self.session.headers.update({'User-Agent': 'Guiabolso/235 CFNetwork/893.14.2 Darwin/17.3.0'})
+        self.session.headers.update({
+            'User-Agent': 'Guiabolso/235 CFNetwork/893.14.2 Darwin/17.3.0'
+        })
 
         response = self.session.post(url, headers=headers, data=payload).json()
 
         if response['name'] != "users:login:response":
             print(response['name'])
             raise Exception(response['payload']['code'])
-        
+
         return response['auth']['token']
 
     def get_basic_info(self):
@@ -184,7 +187,8 @@ class GuiaBolso(object):
     def transactions(self, year, month):
         transactions_new = []
         transactions = self.json_transactions(year, month).json()
-        for statement in transactions['payload']['userMonthHistory']['statements']:
+        statements = transactions['payload']['userMonthHistory']['statements']
+        for statement in statements:
             for t in statement['transactions']:
                 cat_id = t['categoryId']
                 t['category'], t['subcategory'] = self.category_resolver[cat_id]
