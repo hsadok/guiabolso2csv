@@ -2,4 +2,4 @@
 
 __author__ = 'Hugo Sadok'
 __email__ = 'hugo@sadok.com.br'
-__version__ = '0.5'
+__version__ = '0.6'
